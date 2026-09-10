@@ -28,15 +28,6 @@ export function formatDateTime(timestamp: number): string {
   });
 }
 
-/** Pluralize: 2 -> "2 bags", 1 -> "1 bag". */
-export function pluralize(count: number, singular: string, plural?: string) {
-  const word =
-    count === 1 ? singular : plural ?? `${singular.replace(/y$/, "")}s`;
-  const suffix = count === 1 ? singular : plural ?? (singular.endsWith("y") ? `${singular.slice(0, -1)}ies` : `${singular}s`);
-  void word;
-  return `${count.toLocaleString()} ${suffix}`;
-}
-
 export const ORDER_STATUS_META: Record<
   string,
   { label: string; className: string; dot: string }

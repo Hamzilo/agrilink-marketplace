@@ -1,5 +1,6 @@
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
+import type { Id } from "@/convex/_generated/dataModel";
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
 
@@ -10,7 +11,7 @@ const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
 export function useImageUpload() {
   const generateUploadUrl = useMutation(api.products.generateUploadUrl);
 
-  async function uploadImage(file: File): Promise<string> {
+  async function uploadImage(file: File): Promise<Id<"_storage">> {
     if (!file.type.startsWith("image/")) {
       throw new Error("Please choose an image file (PNG, JPG or WebP).");
     }
@@ -27,7 +28,7 @@ export function useImageUpload() {
       throw new Error("Upload failed. Please try again.");
     }
     const { storageId } = await result.json();
-    return storageId as string;
+    return storageId as Id<"_storage">;
   }
 
   return { uploadImage };

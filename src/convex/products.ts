@@ -72,21 +72,31 @@ export const listProducts = query({
     } else if (args.categorySlug) {
       const category = await getCategoryBySlug(ctx, args.categorySlug);
       if (!category) return { page: [], isDone: true, continueCursor: "" };
+      const sort = args.sort ?? "newest";
       const result = await ctx.db
         .query("products")
-        .withIndex("by_status_category", (q) =>
-          q.eq("status", "available").eq("categoryId", category._id),
+        .withIndex(
+          sort === "price_asc" || sort === "price_desc"
+            ? "by_status_category_price"
+            : "by_status_category",
+          (q) => q.eq("status", "available").eq("categoryId", category._id),
         )
-        .order(args.sort === "price_asc" ? "asc" : "desc")
+        .order(sort === "price_asc" ? "asc" : "desc")
         .paginate({ numItems: limit, cursor: args.cursor ?? null });
       page = result.page;
       isDone = result.isDone;
       continueCursor = result.continueCursor;
     } else {
+      const sort = args.sort ?? "newest";
       const result = await ctx.db
         .query("products")
-        .withIndex("by_status", (q) => q.eq("status", "available"))
-        .order(args.sort === "price_asc" ? "asc" : "desc")
+        .withIndex(
+          sort === "price_asc" || sort === "price_desc"
+            ? "by_status_price"
+            : "by_status",
+          (q) => q.eq("status", "available"),
+        )
+        .order(sort === "price_asc" ? "asc" : "desc")
         .paginate({ numItems: limit, cursor: args.cursor ?? null });
       page = result.page;
       isDone = result.isDone;
